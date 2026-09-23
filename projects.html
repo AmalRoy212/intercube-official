@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects  InterCube</title>
+  <meta name="description"
+    content="Selected InterCube work across retail, offices, and hospitality interiors in Bangalore.">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__logo"><span class="brandmark"><b>I</b>nter<b class="brandmark__c">C</b>ube</span></a>
+      <nav class="nav__links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="projects.html" class="nav__link--active" aria-current="page">Projects</a>
+        <a href="contact.html" class="nav__cta" data-project-modal>Start a Project</a>
+      </nav>
+      <button class="nav__toggle" id="navToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <section class="page-hero page-hero--work">
+    <div class="page-hero__inner">
+      <p class="page-hero__eyebrow">Selected work</p>
+      <h1 class="page-hero__title">Spaces delivered with <em>precision</em>.</h1>
+      <p class="page-hero__sub">
+        Retail, workplaces and hospitality  photographed as built, manufactured in Yelahanka.
+      </p>
+    </div>
+  </section>
+
+  <section class="work">
+    <div class="container">
+      <div class="filter-bar filter-bar--work">
+        <button type="button" class="filter-btn active" data-filter="all">All</button>
+        <button type="button" class="filter-btn" data-filter="retail">Retail</button>
+        <button type="button" class="filter-btn" data-filter="offices">Offices</button>
+        <button type="button" class="filter-btn" data-filter="hospitality">Hospitality</button>
+      </div>
+
+      <div class="work-stage">
+        <article class="work-band" data-filter-item data-sector="retail">
+          <button type="button" class="work-tile work-tile--hero" data-src="images/retail-main.jpg" data-label="Retail" data-title="Premium Retail Environments">
+            <img src="images/retail-main.jpg" alt="Premium retail showroom" loading="lazy">
+            <span class="work-tile__shade"></span>
+            <span class="work-tile__copy">
+              <span class="work-tile__index">01</span>
+              <span class="work-tile__sector">Retail</span>
+              <span class="work-tile__title">Premium Retail Environments</span>
+              <span class="work-tile__desc">Immersive brand experiences through precision-crafted interiors that drive engagement and sales.</span>
+              <span class="work-tile__cta">View image</span>
+            </span>
+          </button>
+          <div class="work-band__side">
+            <button type="button" class="work-tile" data-src="images/retail-thumb-1.jpg" data-label="Retail" data-title="Storefront entrance">
+              <img src="images/retail-thumb-1.jpg" alt="Storefront entrance" loading="lazy">
+              <span class="work-tile__shade work-tile__shade--soft"></span>
+              <span class="work-tile__peek">View</span>
+            </button>
+            <button type="button" class="work-tile" data-src="images/retail-thumb-2.jpg" data-label="Retail" data-title="Interior display showroom">
+              <img src="images/retail-thumb-2.jpg" alt="Interior display showroom" loading="lazy">
+              <span class="work-tile__shade work-tile__shade--soft"></span>
+              <span class="work-tile__peek">View</span>
+            </button>
+          </div>
+        </article>
+
+        <article class="work-band work-band--reverse" data-filter-item data-sector="offices">
+          <div class="work-band__side">
+            <button type="button" class="work-tile" data-src="images/office-thumb-1.jpg" data-label="Offices" data-title="Collaborative workstations">
+              <img src="images/office-thumb-1.jpg" alt="Collaborative workstations" loading="lazy">
+              <span class="work-tile__shade work-tile__shade--soft"></span>
+              <span class="work-tile__peek">View</span>
+            </button>
+            <button type="button" class="work-tile" data-src="images/office-thumb-2.jpg" data-label="Offices" data-title="Executive lounge">
+              <img src="images/office-thumb-2.jpg" alt="Executive lounge" loading="lazy">
+              <span class="work-tile__shade work-tile__shade--soft"></span>
+              <span class="work-tile__peek">View</span>
+            </button>
+          </div>
+          <button type="button" class="work-tile work-tile--hero" data-src="images/office-main.jpg" data-label="Offices" data-title="Workspaces That Inspire">
+            <img src="images/office-main.jpg" alt="Modern office interiors" loading="lazy">
+            <span class="work-tile__shade"></span>
+            <span class="work-tile__copy">
+              <span class="work-tile__index">02</span>
+              <span class="work-tile__sector">Offices</span>
+              <span class="work-tile__title">Workspaces That Inspire</span>
+              <span class="work-tile__desc">Modern office interiors designed for productivity, collaboration and brand identity.</span>
+              <span class="work-tile__cta">View image</span>
+            </span>
+          </button>
+        </article>
+
+        <article class="work-band" data-filter-item data-sector="hospitality">
+          <button type="button" class="work-tile work-tile--hero" data-src="images/hospitality-main.jpg" data-label="Hospitality &amp; Living" data-title="Refined Spaces, Built to Last">
+            <img src="images/hospitality-main.jpg" alt="Luxury hospitality suite" loading="lazy">
+            <span class="work-tile__shade"></span>
+            <span class="work-tile__copy">
+              <span class="work-tile__index">03</span>
+              <span class="work-tile__sector">Hospitality &amp; Living</span>
+              <span class="work-tile__title">Refined Spaces, Built to Last</span>
+              <span class="work-tile__desc">Bespoke joinery, acoustic timber panelling and finishes crafted for world-class hospitality.</span>
+              <span class="work-tile__cta">View image</span>
+            </span>
+          </button>
+          <div class="work-band__side">
+            <button type="button" class="work-tile" data-src="images/hospitality-thumb-1.jpg" data-label="Hospitality &amp; Living" data-title="Bespoke fireplace detail">
+              <img src="images/hospitality-thumb-1.jpg" alt="Bespoke fireplace detail" loading="lazy">
+              <span class="work-tile__shade work-tile__shade--soft"></span>
+              <span class="work-tile__peek">View</span>
+            </button>
+            <button type="button" class="work-tile" data-src="images/hospitality-thumb-2.jpg" data-label="Hospitality &amp; Living" data-title="Fluted timber panelling">
+              <img src="images/hospitality-thumb-2.jpg" alt="Fluted timber panelling detail" loading="lazy">
+              <span class="work-tile__shade work-tile__shade--soft"></span>
+              <span class="work-tile__peek">View</span>
+            </button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <dialog id="projectModal" class="project-modal" aria-labelledby="modalHeading">
+    <div class="project-modal__backdrop" id="modalBackdrop"></div>
+    <div class="project-modal__container">
+      <button type="button" class="project-modal__close" id="modalClose" aria-label="Close modal">&times;</button>
+      <div class="project-modal__frame">
+        <img src="" alt="" id="modalImg" class="project-modal__img">
+      </div>
+      <div class="project-modal__caption">
+        <span class="project-modal__sector" id="modalSector"></span>
+        <h4 class="project-modal__title" id="modalHeading"></h4>
+      </div>
+    </div>
+  </dialog>
+
+  <section class="cta-banner">
+    <div class="cta-banner__inner reveal">
+      <h2>Let’s add yours to this <em>list</em>.</h2>
+      <p>Retail, workplace, hospitality or beyond  start with a conversation.</p>
+      <a href="contact.html" class="btn btn--primary">Start a Project</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <a href="index.html" class="nav__logo"><span class="brandmark brandmark--footer"><b>I</b>nter<b class="brandmark__c">C</b>ube</span></a>
+      <nav class="footer__nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="projects.html">Projects</a>
+        <a href="contact.html">Start a Project</a>
+      </nav>
+      <p>DESIGN · MANUFACTURE · EXECUTE  Precision. Passion. Performance.</p>
+      <p class="footer__copy">© <span id="year"></span> InterCube, Bangalore, India. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+
+</html>
