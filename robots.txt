@@ -3,4 +3,4 @@ Allow: /
 Disallow: /videos/
 
 # Sitemaps
-Sitemap: https://www.intercube.in/sitemap.xml
+Sitemap: https://intercube.in/sitemap.xml
