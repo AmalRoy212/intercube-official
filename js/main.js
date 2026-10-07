@@ -215,13 +215,20 @@ const ensureSuccessDialog = () => {
   d.setAttribute('aria-labelledby', 'enquirySuccessTitle');
   d.innerHTML = `
     <div class="enquiry-success-dialog__surface">
+      <button type="button" class="enquiry-success-dialog__close" aria-label="Close">&times;</button>
       <p class="eyebrow enquiry-success-dialog__eyebrow">Received</p>
       <h2 id="enquirySuccessTitle">You have successfully submitted your enquiry.</h2>
       <p>Thank you for reaching out. We will contact you soon.</p>
       <p class="enquiry-success-dialog__footer">Need an immediate response? Call <a href="tel:+919844100700">+91 98441 00700</a>.</p>
     </div>`;
   document.body.appendChild(d);
-  d.addEventListener('click', e => { if (e.target === d) try { d.close(); } catch (_) {} });
+  const closeBtn = d.querySelector('.enquiry-success-dialog__close');
+  const closeIt = () => {
+    try { d.close(); } catch (_) { d.removeAttribute('open'); }
+    if (__enquirySuccessTimer) { clearTimeout(__enquirySuccessTimer); __enquirySuccessTimer = null; }
+  };
+  if (closeBtn) closeBtn.addEventListener('click', closeIt);
+  d.addEventListener('click', e => { if (e.target === d) closeIt(); });
   __enquirySuccessDialog = d;
   return d;
 };

@@ -5487,8 +5487,8 @@ a.contact-line:hover {
 
 .enquiry-success-dialog__surface {
   position: relative;
-  padding: 44px 34px 34px;
-  border-radius: 20px;
+  padding: 38px 28px 26px;
+  border-radius: 18px;
   background: linear-gradient(160deg, #fff 0%, var(--paper) 100%);
   border: 1px solid rgba(184, 73, 15, .18);
   box-shadow: 0 28px 80px -28px rgba(0, 0, 0, .5),
@@ -5496,25 +5496,50 @@ a.contact-line:hover {
   text-align: center;
 }
 
+.enquiry-success-dialog__close {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .96);
+  color: var(--ink);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease, transform .2s ease;
+}
+
+.enquiry-success-dialog__close:hover {
+  background: var(--rust);
+  color: #fff;
+  transform: rotate(90deg);
+}
+
 .enquiry-success-dialog__eyebrow {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   color: var(--rust);
   font-weight: 600;
   letter-spacing: .08em;
+  font-size: .72rem;
 }
 
 .enquiry-success-dialog h2 {
   font-family: var(--font-display);
-  font-size: clamp(1.35rem, 2.6vw, 1.75rem);
-  line-height: 1.15;
-  margin: 0 0 10px;
+  font-size: clamp(1rem, 2.1vw, 1.22rem);
+  line-height: 1.2;
+  margin: 0 0 8px;
   color: var(--ink);
 }
 
 .enquiry-success-dialog p {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   color: var(--muted);
-  font-size: .98rem;
+  font-size: .84rem;
+  line-height: 1.4;
 }
 
 .enquiry-success-dialog a {
@@ -5529,15 +5554,15 @@ a.contact-line:hover {
 }
 
 .enquiry-success-dialog__footer {
-  margin-top: 18px !important;
-  font-size: .9rem;
-  padding-top: 14px;
+  margin-top: 14px !important;
+  font-size: .78rem;
+  padding-top: 12px;
   border-top: 1px solid rgba(20, 18, 16, .08);
 }
 
 @media (max-width: 680px) {
-  .enquiry-success-dialog { width: min(100% - 20px, 480px); }
-  .enquiry-success-dialog__surface { padding: 34px 22px 26px; }
+  .enquiry-success-dialog { width: min(100% - 20px, 420px); }
+  .enquiry-success-dialog__surface { padding: 36px 20px 22px; }
 }
 
 @media (min-width: 681px) and (max-width: 1020px) {
