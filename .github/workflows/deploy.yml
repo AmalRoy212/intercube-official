@@ -1,0 +1,71 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate ENQUIRY_ENDPOINT secret presence
+        env:
+          ENDPOINT: ${{ secrets.ENQUIRY_ENDPOINT }}
+        run: |
+          if [ -z "$ENDPOINT" ]; then
+            echo "WARNING: ENQUIRY_ENDPOINT secret is not set in this repo. Forms will fall back to offline (local-only) mode."
+          else
+            if echo "$ENDPOINT" | grep -qE '^https://script\.google\.com/macros/s/.+/exec$'; then
+              echo "ENQUIRY_ENDPOINT looks like a valid Google Apps Script Web App URL."
+            else
+              echo "WARNING: ENQUIRY_ENDPOINT doesn't look like a Google Apps Script /exec URL. Check the format."
+            fi
+          fi
+
+      - name: Inject secret into env.js and every HTML inline-script placeholder
+        env:
+          ENDPOINT: ${{ secrets.ENQUIRY_ENDPOINT }}
+        run: |
+          set -eu
+          FILES="js/env.js index.html about.html services.html projects.html contact.html"
+          if [ -n "$ENDPOINT" ]; then
+            # Replace the literal __ENQUIRY_ENDPOINT__ token in env.js and every HTML page
+            for f in $FILES; do
+              sed -i "s|__ENQUIRY_ENDPOINT__|$ENDPOINT|g" "$f"
+            done
+            echo "Replaced __ENQUIRY_ENDPOINT__ with the secret value in:" $FILES
+          else
+            echo "Secret not set — leaving __ENQUIRY_ENDPOINT__ placeholders untouched."
+          fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

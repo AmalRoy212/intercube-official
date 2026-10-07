@@ -76,9 +76,30 @@ if (filterBtns.length && filterItems.length) {
 
 // ===============================
 // Contact / enquiry submission → Google Sheets (via Google Apps Script Web App)
-// Paste your deployed Apps Script /exec URL below after completing the setup.
-// Leave as null to keep the form working locally without a backend call.
-const ENQUIRY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxjzXE4qQsFXlDWvj9IpbBWgke53hBmFk3ZDR6C54UyGmVhe2ljea5xl0CUqD-bHrhJxw/exec';
+//
+// The Apps Script /exec URL is NOT hardcoded in the repo. It is injected at
+// deploy time via GitHub Secrets (Actions workflow), or your hosting provider's
+// environment-variable replacement.
+//
+// Priority order (first non-empty wins):
+//   1. window.__ENQUIRY_ENDPOINT__      — inline <script> set by your hosting
+//                                         provider's __TOKEN__ replacement
+//   2. window.INTERCUBE.ENQUIRY_ENDPOINT — loaded earlier from js/env.js
+//   3. null                              — form still works locally (offline
+//                                         mode), submissions are not sent
+//
+// To test locally: copy js/env.sample.js → js/env.local.js and load
+// js/env.local.js before js/main.js in index.html.
+const __fromInjected = (typeof window !== 'undefined' && window.__ENQUIRY_ENDPOINT__) ? String(window.__ENQUIRY_ENDPOINT__).trim() : '';
+const __fromEnvJs = (typeof window !== 'undefined' && window.INTERCUBE && window.INTERCUBE.ENQUIRY_ENDPOINT) ? String(window.INTERCUBE.ENQUIRY_ENDPOINT).trim() : '';
+const ENQUIRY_ENDPOINT = (__fromInjected || __fromEnvJs || null) && /^https:\/\//.test(__fromInjected || __fromEnvJs || '')
+  ? (__fromInjected || __fromEnvJs)
+  : null;
+// DEV ONLY: if env.local.js or a hosting provider provided a non-https URL, we
+// intentionally discard it. Only https:// endpoints are sent.
+if (typeof window !== 'undefined' && !ENQUIRY_ENDPOINT && (__fromInjected || __fromEnvJs)) {
+  console.warn('[enquiry] ENQUIRY_ENDPOINT is set but did not match https://; skipping remote submit.');
+}
 const normalizePhoneIN = (raw) => {
   if (raw == null) return '';
   const s = String(raw).trim();
