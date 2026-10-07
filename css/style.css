@@ -5452,6 +5452,94 @@ a.contact-line:hover {
   font-weight: 600;
 }
 
+/* ---------- Enquiry success popup ---------- */
+.enquiry-success-dialog {
+  width: min(480px, calc(100% - 32px));
+  max-width: none;
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.45;
+  animation: enquirySuccessPop .28s cubic-bezier(.22,1,.36,1) both;
+}
+
+.enquiry-success-dialog::backdrop {
+  background: rgba(20, 18, 16, .65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: enquiryFadeBackdrop .25s ease both;
+}
+
+@keyframes enquirySuccessPop {
+  from { opacity: 0; transform: translateY(14px) scale(.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes enquiryFadeBackdrop {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.enquiry-success-dialog__surface {
+  position: relative;
+  padding: 44px 34px 34px;
+  border-radius: 20px;
+  background: linear-gradient(160deg, #fff 0%, var(--paper) 100%);
+  border: 1px solid rgba(184, 73, 15, .18);
+  box-shadow: 0 28px 80px -28px rgba(0, 0, 0, .5),
+              inset 0 1px 0 rgba(255,255,255,.9);
+  text-align: center;
+}
+
+.enquiry-success-dialog__eyebrow {
+  margin-bottom: 10px;
+  color: var(--rust);
+  font-weight: 600;
+  letter-spacing: .08em;
+}
+
+.enquiry-success-dialog h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.6vw, 1.75rem);
+  line-height: 1.15;
+  margin: 0 0 10px;
+  color: var(--ink);
+}
+
+.enquiry-success-dialog p {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: .98rem;
+}
+
+.enquiry-success-dialog a {
+  color: var(--rust);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(184, 73, 15, .35);
+}
+
+.enquiry-success-dialog a:hover {
+  color: var(--rust-light);
+}
+
+.enquiry-success-dialog__footer {
+  margin-top: 18px !important;
+  font-size: .9rem;
+  padding-top: 14px;
+  border-top: 1px solid rgba(20, 18, 16, .08);
+}
+
+@media (max-width: 680px) {
+  .enquiry-success-dialog { width: min(100% - 20px, 480px); }
+  .enquiry-success-dialog__surface { padding: 34px 22px 26px; }
+}
+
 @media (min-width: 681px) and (max-width: 1020px) {
   .form-row {
     grid-template-columns: 1fr 1fr;

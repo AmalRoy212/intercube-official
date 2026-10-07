@@ -36,7 +36,6 @@ The Apps Script writes to columns in this order. If the sheet has no headers yet
 7. `Sector`
 8. `Message`
 9. `Page URL` — which page the user submitted from
-10. `User Agent` (optional, short)
 
 If the sheet already has a different header structure on gid=0, the Apps Script will use a header-name→column-index lookup (by reading row 1) instead of positional, so adding/removing columns later won't break writes.
 

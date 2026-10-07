@@ -21,7 +21,7 @@
  *  7. Create Row 1 headers on the first sheet tab (gid=0). You only need to set
  *     these once. Missing or extra columns are ignored by the header-keyed write:
  *       Timestamp (IST) | Source | Name | Email | Phone (raw) |
- *       Phone (normalized E.164) | Sector | Message | Page URL | User Agent
+ *       Phone (normalized E.164) | Sector | Message | Page URL
  */
 
 const HEADER_ORDER = [
@@ -34,7 +34,6 @@ const HEADER_ORDER = [
   'Sector',
   'Message',
   'Page URL',
-  'User Agent',
 ];
 
 const REQUIRED_FIELDS = ['name', 'email', 'phoneRaw'];
@@ -125,7 +124,6 @@ function doPost(e) {
       'Sector': trunc_(body.sector || '', 80),
       'Message': trunc_(body.message || '', 5000),
       'Page URL': trunc_(body.pageUrl || '', 500),
-      'User Agent': trunc_(body.ua || '', 250),
     };
 
     const lastCol = Math.max(...Object.values(idx), HEADER_ORDER.length);

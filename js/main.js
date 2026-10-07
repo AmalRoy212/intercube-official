@@ -78,8 +78,7 @@ if (filterBtns.length && filterItems.length) {
 // Contact / enquiry submission → Google Sheets (via Google Apps Script Web App)
 // Paste your deployed Apps Script /exec URL below after completing the setup.
 // Leave as null to keep the form working locally without a backend call.
-const ENQUIRY_ENDPOINT = null; // e.g. 'https://script.google.com/macros/s/ABCXYZ123/exec'
-
+const ENQUIRY_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxjzXE4qQsFXlDWvj9IpbBWgke53hBmFk3ZDR6C54UyGmVhe2ljea5xl0CUqD-bHrhJxw/exec';
 const normalizePhoneIN = (raw) => {
   if (raw == null) return '';
   const s = String(raw).trim();
@@ -146,7 +145,6 @@ const submitEnquiry = async (formEl, { source }) => {
     sector, message,
     source,
     pageUrl: location.href,
-    ua: navigator.userAgent.substring(0, 180),
     token: Math.random().toString(36).slice(2) + now.toString(36),
   };
 
@@ -206,20 +204,55 @@ const showFormError = (formEl, msg) => {
   err.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
 };
 
+let __enquirySuccessDialog = null;
+let __enquirySuccessTimer = null;
+const SUCCESS_POPUP_MS = 4200;
+
+const ensureSuccessDialog = () => {
+  if (__enquirySuccessDialog && document.body.contains(__enquirySuccessDialog)) return __enquirySuccessDialog;
+  const d = document.createElement('dialog');
+  d.className = 'enquiry-success-dialog';
+  d.setAttribute('aria-labelledby', 'enquirySuccessTitle');
+  d.innerHTML = `
+    <div class="enquiry-success-dialog__surface">
+      <p class="eyebrow enquiry-success-dialog__eyebrow">Received</p>
+      <h2 id="enquirySuccessTitle">You have successfully submitted your enquiry.</h2>
+      <p>Thank you for reaching out. We will contact you soon.</p>
+      <p class="enquiry-success-dialog__footer">Need an immediate response? Call <a href="tel:+919844100700">+91 98441 00700</a>.</p>
+    </div>`;
+  document.body.appendChild(d);
+  d.addEventListener('click', e => { if (e.target === d) try { d.close(); } catch (_) {} });
+  __enquirySuccessDialog = d;
+  return d;
+};
+
+const showEnquirySuccessPopup = () => {
+  const d = ensureSuccessDialog();
+  try { d.showModal(); } catch (_) { d.setAttribute('open', ''); }
+  document.body.style.overflow = '';
+  if (__enquirySuccessTimer) clearTimeout(__enquirySuccessTimer);
+  __enquirySuccessTimer = setTimeout(() => {
+    try { d.close(); } catch (_) { d.removeAttribute('open'); }
+    __enquirySuccessTimer = null;
+  }, SUCCESS_POPUP_MS);
+};
+
 // Contact page form
 const contactForm = document.getElementById('contactForm');
 const formSuccess = document.getElementById('formSuccess');
-if (contactForm && formSuccess) {
+if (contactForm) {
   contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     showFormError(contactForm, null);
+    if (formSuccess) { formSuccess.classList.remove('is-visible'); }
     setSubmitting(contactForm, true);
     const result = await submitEnquiry(contactForm, { source: 'contact-page' });
     setSubmitting(contactForm, false);
     if (result.ok) {
-      contactForm.classList.add('is-hidden');
-      formSuccess.classList.add('is-visible');
-      formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      contactForm.reset();
+      if (formSuccess) formSuccess.classList.remove('is-visible');
+      contactForm.classList.remove('is-hidden');
+      showEnquirySuccessPopup();
     } else {
       showFormError(contactForm, result.error || 'Something went wrong. Please try again.');
     }
@@ -413,12 +446,17 @@ if (projectModalTriggers.length) {
   enquiryForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     showFormError(enquiryForm, null);
+    enquirySuccess.hidden = true;
     setSubmitting(enquiryForm, true);
     const result = await submitEnquiry(enquiryForm, { source: 'project-enquiry-modal' });
     setSubmitting(enquiryForm, false);
     if (result.ok) {
-      enquiryForm.hidden = true;
-      enquirySuccess.hidden = false;
+      enquiryForm.reset();
+      enquiryForm.hidden = false;
+      enquirySuccess.hidden = true;
+      showFormError(enquiryForm, null);
+      try { enquiryModal.close(); } catch (_) {}
+      showEnquirySuccessPopup();
     } else {
       showFormError(enquiryForm, result.error || 'Something went wrong. Please try again.');
     }
