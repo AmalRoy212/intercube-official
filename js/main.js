@@ -74,15 +74,155 @@ if (filterBtns.length && filterItems.length) {
   });
 }
 
-// Contact form (static site — local confirmation)
+// ===============================
+// Contact / enquiry submission → Google Sheets (via Google Apps Script Web App)
+// Paste your deployed Apps Script /exec URL below after completing the setup.
+// Leave as null to keep the form working locally without a backend call.
+const ENQUIRY_ENDPOINT = null; // e.g. 'https://script.google.com/macros/s/ABCXYZ123/exec'
+
+const normalizePhoneIN = (raw) => {
+  if (raw == null) return '';
+  const s = String(raw).trim();
+  if (!s) return '';
+  const digitsOnly = s.replace(/[^\d+]/g, '');
+  const withPlus = digitsOnly.startsWith('+');
+  const nums = digitsOnly.replace(/^\+/, '');
+  if (withPlus) {
+    const rest = nums.replace(/\D/g, '');
+    return rest.length >= 9 ? `+${rest}` : '';
+  }
+  if (/^00/.test(nums)) {
+    const rest = nums.slice(2).replace(/\D/g, '');
+    return rest.length >= 9 ? `+${rest}` : '';
+  }
+  const d = nums.replace(/\D/g, '');
+  if (d.startsWith('91') && d.length >= 12) return `+${d}`;
+  if (d.startsWith('0') && d.length >= 11) return `+91${d.slice(1)}`;
+  if (d.length === 10) return `+91${d}`;
+  if (d.length >= 9 && d.length <= 12) return `+91${d}`;
+  return '';
+};
+
+let __enquiryLastSentAt = 0;
+let __enquiryCountThisSession = 0;
+const SUBMIT_COOLDOWN_MS = 5000;
+const SUBMIT_MAX_PER_SESSION = 3;
+
+const submitEnquiry = async (formEl, { source }) => {
+  const data = {};
+  new FormData(formEl).forEach((v, k) => { data[k] = typeof v === 'string' ? v.trim() : v; });
+  const honeypot = data.website;
+  if (honeypot && String(honeypot).trim() !== '') {
+    console.warn('[enquiry] honeypot filled — treating as bot, not sending.');
+    return { ok: true, silent: true };
+  }
+  const name = (data.name || '').trim();
+  const email = (data.email || '').trim();
+  const phoneRaw = (data.phone || '').trim();
+  const sector = (data.sector || '').trim();
+  const message = (data.message || '').trim();
+  if (!name || !email || !phoneRaw) {
+    return { ok: false, error: 'Please fill in your name, email, and mobile number.' };
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { ok: false, error: 'Please enter a valid email address.' };
+  }
+  const phoneDigits = phoneRaw.replace(/\D/g, '');
+  if (phoneDigits.length < 9) {
+    return { ok: false, error: 'Please enter a valid mobile number (at least 9 digits).' };
+  }
+  const now = Date.now();
+  if (now - __enquiryLastSentAt < SUBMIT_COOLDOWN_MS) {
+    return { ok: false, error: 'Please wait a moment before sending another message.' };
+  }
+  if (__enquiryCountThisSession >= SUBMIT_MAX_PER_SESSION) {
+    return { ok: false, error: 'Too many recent submissions. Please try again later or email us directly.' };
+  }
+
+  const payload = {
+    name, email,
+    phoneRaw,
+    phoneE164: normalizePhoneIN(phoneRaw),
+    sector, message,
+    source,
+    pageUrl: location.href,
+    ua: navigator.userAgent.substring(0, 180),
+    token: Math.random().toString(36).slice(2) + now.toString(36),
+  };
+
+  if (!ENQUIRY_ENDPOINT) {
+    console.info('[enquiry] ENQUIRY_ENDPOINT not configured — skipping remote submit. Payload:', payload);
+    __enquiryLastSentAt = now;
+    __enquiryCountThisSession += 1;
+    return { ok: true, offline: true };
+  }
+
+  try {
+    const res = await fetch(ENQUIRY_ENDPOINT, {
+      method: 'POST',
+      mode: 'cors',
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+    });
+    let dataOut = null;
+    try { dataOut = await res.json(); } catch (_) { /* ignore */ }
+    if (!res.ok) {
+      return { ok: false, error: dataOut?.error || dataOut?.message || 'Server returned an error. Please try again in a moment.' };
+    }
+    if (dataOut && dataOut.ok === false) {
+      return { ok: false, error: dataOut.error || 'Unable to save your message right now.' };
+    }
+    __enquiryLastSentAt = now;
+    __enquiryCountThisSession += 1;
+    return { ok: true };
+  } catch (err) {
+    console.error('[enquiry] submission error:', err);
+    return { ok: false, error: 'We couldn\u2019t send your message right now. Please email enquiry@intercube.in or call +91 98441 00700.' };
+  }
+};
+
+const setSubmitting = (form, isSubmitting) => {
+  const btn = form?.querySelector('button[type="submit"]');
+  if (!btn) return;
+  if (isSubmitting) {
+    btn.dataset.originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
+    btn.textContent = 'Sending…';
+  } else {
+    btn.disabled = false;
+    btn.removeAttribute('aria-busy');
+    if (btn.dataset.originalLabel) btn.textContent = btn.dataset.originalLabel;
+  }
+};
+
+const showFormError = (formEl, msg) => {
+  const err = formEl?.querySelector('.form-error, [role="alert"][data-form-error]');
+  if (!err) return;
+  if (!msg) { err.hidden = true; err.textContent = ''; return; }
+  err.textContent = msg;
+  err.hidden = false;
+  err.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+};
+
+// Contact page form
 const contactForm = document.getElementById('contactForm');
 const formSuccess = document.getElementById('formSuccess');
 if (contactForm && formSuccess) {
-  contactForm.addEventListener('submit', e => {
+  contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    contactForm.classList.add('is-hidden');
-    formSuccess.classList.add('is-visible');
-    formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showFormError(contactForm, null);
+    setSubmitting(contactForm, true);
+    const result = await submitEnquiry(contactForm, { source: 'contact-page' });
+    setSubmitting(contactForm, false);
+    if (result.ok) {
+      contactForm.classList.add('is-hidden');
+      formSuccess.classList.add('is-visible');
+      formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      showFormError(contactForm, result.error || 'Something went wrong. Please try again.');
+    }
   });
 }
 
@@ -222,8 +362,10 @@ if (projectModalTriggers.length) {
         <div class="form-group"><label for="modal-phone">Mobile number</label><input id="modal-phone" name="phone" type="tel" autocomplete="tel" placeholder="+91 98441 00700" required></div>
         <div class="form-group"><label for="modal-sector">I’m enquiring about</label><select id="modal-sector" name="sector" required><option value="" selected disabled>Select a project type</option><option>Retail</option><option>Offices</option><option>Hospitality</option><option>Healthcare</option><option>Residential</option><option>Experience Centre</option><option>Other</option></select></div>
         <div class="form-group"><label for="modal-message">Message</label><textarea id="modal-message" name="message" placeholder="Tell us how we can help…"></textarea></div>
+        <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;pointer-events:none">
         <div class="form-submit"><button type="submit" class="btn btn--primary">Send message</button></div>
-        <p class="form-note">Prefer email? <a href="mailto:kushal@infinitybiz.co.in">kushal@infinitybiz.co.in</a></p>
+        <div class="form-error" role="alert" data-form-error hidden></div>
+        <p class="form-note">Prefer email? <a href="mailto:enquiry@intercube.in">enquiry@intercube.in</a></p>
       </form>
       <div class="project-enquiry-modal__success" hidden role="status">
         <p class="eyebrow">Received</p>
@@ -242,6 +384,7 @@ if (projectModalTriggers.length) {
     enquiryForm.hidden = false;
     enquirySuccess.hidden = true;
     enquiryForm.reset();
+    showFormError(enquiryForm, null);
   };
 
   const closeEnquiryModal = () => {
@@ -267,10 +410,18 @@ if (projectModalTriggers.length) {
     document.body.style.overflow = '';
     enquiryTrigger?.focus();
   });
-  enquiryForm.addEventListener('submit', event => {
+  enquiryForm.addEventListener('submit', async (event) => {
     event.preventDefault();
-    enquiryForm.hidden = true;
-    enquirySuccess.hidden = false;
+    showFormError(enquiryForm, null);
+    setSubmitting(enquiryForm, true);
+    const result = await submitEnquiry(enquiryForm, { source: 'project-enquiry-modal' });
+    setSubmitting(enquiryForm, false);
+    if (result.ok) {
+      enquiryForm.hidden = true;
+      enquirySuccess.hidden = false;
+    } else {
+      showFormError(enquiryForm, result.error || 'Something went wrong. Please try again.');
+    }
   });
 }
 
