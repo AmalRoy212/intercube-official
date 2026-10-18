@@ -523,3 +523,14 @@ if (sectorCards.length) {
     });
   });
 }
+
+// Exclusive Brands — show text wordmark when a logo image is unavailable
+const brandLogos = document.querySelectorAll('.brand-logo__img');
+if (brandLogos.length) {
+  brandLogos.forEach(img => {
+    const card = img.closest('.brand-logo');
+    const markMissing = () => { if (card) card.classList.add('is-missing'); };
+    img.addEventListener('error', markMissing);
+    if (img.complete && img.naturalWidth === 0) markMissing();
+  });
+}

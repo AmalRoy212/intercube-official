@@ -5691,3 +5691,164 @@ a.contact-line:hover {
     padding: 82px 24px 36px;
   }
 }
+
+/* ==========================================================================
+   EXCLUSIVE BRANDS
+   ========================================================================== */
+.brand-strip {
+  position: relative;
+  background: linear-gradient(180deg, var(--ink) 0%, var(--ink-soft) 100%);
+  color: #fff;
+  padding: clamp(76px, 9vw, 118px) 0;
+  overflow: hidden;
+}
+
+.brand-strip::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: 50%;
+  width: min(900px, 90%);
+  height: 70%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(184, 73, 15, .22), transparent 62%);
+  pointer-events: none;
+}
+
+.brand-strip .section__head {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.brand-strip .eyebrow {
+  color: var(--rust-light);
+}
+
+.brand-strip .section__head h2 {
+  color: #fff;
+}
+
+.brand-strip__lede {
+  margin-top: 18px;
+  font-size: .95rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, .62);
+}
+
+.brand-grid {
+  position: relative;
+  z-index: 1;
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 18px;
+}
+
+.brand-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 148px;
+  padding: 26px 18px 20px;
+  background: #fff;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  text-align: center;
+  transition: transform .4s cubic-bezier(.16, 1, .3, 1), background .35s ease, border-color .35s ease, box-shadow .35s ease;
+}
+
+.brand-logo__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  margin-bottom: 4px;
+}
+
+.brand-logo__img {
+  max-height: 42px;
+  max-width: 132px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: brightness(0);
+  opacity: .52;
+  transition: filter .35s ease, opacity .35s ease;
+}
+
+.brand-logo__fallback {
+  display: none;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.02rem;
+  letter-spacing: -.01em;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.brand-logo__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: .92rem;
+  letter-spacing: -.01em;
+  color: var(--ink);
+}
+
+.brand-logo__cat {
+  font-size: .68rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.brand-logo:hover {
+  background: var(--ink);
+  transform: translateY(-6px);
+  border-color: rgba(217, 106, 43, .55);
+  box-shadow: 0 26px 46px -24px rgba(0, 0, 0, .6), 0 0 0 1px rgba(217, 106, 43, .18);
+}
+
+.brand-logo:hover .brand-logo__img {
+  filter: brightness(0) invert(1);
+  opacity: 1;
+}
+
+.brand-logo:hover .brand-logo__name {
+  color: #fff;
+}
+
+.brand-logo:hover .brand-logo__cat {
+  color: rgba(255, 255, 255, .55);
+}
+
+.brand-logo.is-missing .brand-logo__img,
+.brand-logo.is-missing .brand-logo__name {
+  display: none;
+}
+
+.brand-logo.is-missing .brand-logo__fallback {
+  display: block;
+}
+
+.brand-logo.is-missing:hover .brand-logo__fallback {
+  color: #fff;
+}
+
+@media (max-width: 680px) {
+  .brand-grid {
+    margin-top: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+    gap: 14px;
+  }
+
+  .brand-logo {
+    min-height: 128px;
+    padding: 22px 12px 16px;
+  }
+}
