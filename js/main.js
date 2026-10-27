@@ -10,8 +10,32 @@ if (nav) {
 }
 
 if (toggle && links) {
-  toggle.addEventListener('click', () => links.classList.toggle('open'));
-  links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+  const syncNavState = () => {
+    const isOpen = links.classList.contains('open');
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    toggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Menu');
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    if (nav) nav.classList.toggle('menu-open', isOpen);
+  };
+
+  const closeNav = () => {
+    if (!links.classList.contains('open')) return;
+    links.classList.remove('open');
+    syncNavState();
+  };
+
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.addEventListener('click', () => {
+    links.classList.toggle('open');
+    syncNavState();
+  });
+  links.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+  // Tapping the dark backdrop (not a link) closes the menu
+  links.addEventListener('click', e => { if (e.target === links) closeNav(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNav(); });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 680) closeNav();
+  });
 }
 
 // Scroll reveal
